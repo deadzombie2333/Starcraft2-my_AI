@@ -155,9 +155,7 @@ for trials in range(_NUM_MAX_GENERATION):
   numpy.save('move_a_1',Move_matrix_a_1)
   numpy.save('score',Score)
   
-  os.system("python -m pysc2.bin.agent \
-    --map DefeatZerglingsAndBanelings \
-    --agent pysc2.agents.Defeat_zergling_and_banlings_NN_model.my_agent.Attack_Zerg")
+  os.system("python -m pysc2.bin.agent --map DefeatZerglingsAndBanelings --agent pysc2.agents.Defeat_zergling_and_banlings_NN_model.my_agent.Attack_Zerg")
 
   #get score for each candidate
   score = numpy.load('score.npy')
