@@ -164,9 +164,7 @@ for trials in range(_NUM_MAX_GENERATION):
   numpy.save('Matrix_a_1',matrix_a_1)
   numpy.save('score',Score)
 
-  os.system("python -m pysc2.bin.agent \
-	--map BuildMarines \
-	--agent pysc2.agents.Build_barracks_and_marines_NN_model.my_agent.Build_Marine")
+  os.system("python -m pysc2.bin.agent --map BuildMarines --agent pysc2.agents.Build_barracks_and_marines_NN_model.my_agent.Build_Marine")
 
   #get score for each candidate
   score = numpy.load('score.npy')
