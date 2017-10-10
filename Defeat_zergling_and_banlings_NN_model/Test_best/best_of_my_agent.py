@@ -167,6 +167,10 @@ class Attack_Zerg(base_agent.BaseAgent):
         distinct_unit = numpy.delete(distinct_unit,[0])
         for unit in distinct_unit:
           unit_y, unit_x = (player_type == unit).nonzero()
+          if len(unit_y) > 10:
+            select_index = random.sample(range(1,len(unit_y)),10)
+            unit_y = unit_y [select_index]
+            unit_x = unit_x [select_index]
           unit_vector = unit*numpy.ones(len(unit_y))
           unit_relation = player_relative[unit_y,unit_x]
           unit_HP = player_HP[unit_y,unit_x]
