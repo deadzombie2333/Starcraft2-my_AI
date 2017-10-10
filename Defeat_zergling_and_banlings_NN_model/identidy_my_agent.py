@@ -3,10 +3,10 @@ import os
 import re
 import struct
 
-_NUM_POPULATION_SIZE = 20
+_NUM_POPULATION_SIZE = 40
 _NUM_CROSSOVER_RATE = 0.2
 _NUM_MUTATION_RATE = 0.05
-_NUM_MAX_GENERATION = 10
+_NUM_MAX_GENERATION = 1
 #generate a for loop for multiple generation of genetic algorithm
 
 def num_normalize(num,f_length,r_length):
@@ -30,12 +30,8 @@ def num_normalize(num,f_length,r_length):
     return new_num
 
 def Cross_over_fun(num_a,num_b):
-  front_length = 3
+  front_length = 2
   rear_length = 4
-  if num_a > 1000 or num_b > 1000:
-    print(num_a)
-    print(num_b)
-    quit()
   digit_a = num_normalize(num_a,front_length,rear_length)
   digit_b = num_normalize(num_b,front_length,rear_length)
   location_1 = int(numpy.random.randint(0,len(digit_a),size=1))
@@ -43,20 +39,11 @@ def Cross_over_fun(num_a,num_b):
   new_digit_b = digit_b[:location_1] + digit_a[location_1:]
   new_a = float(new_digit_a)
   new_b = float(new_digit_b)
-  if new_a > 1000 or new_b > 1000:
-    print(new_a)
-    print(new_b)
-    quit()
-    new_a = numpy.random.uniform(low = -1, high = 1)
-    new_b = numpy.random.uniform(low = -1, high = 1)
   return (new_a,new_b)
 
 def Mutation_fun(num_a):
-  front_length = 3
+  front_length = 2
   rear_length = 4
-  if num_a > 1000:
-    print(num_a)
-    quit()
   digit_a = num_normalize(num_a,front_length,rear_length)
   index_a = list(range(len(digit_a)))
   index_a.pop(0)
@@ -67,14 +54,10 @@ def Mutation_fun(num_a):
     new_digit_a = digit_a[:location_1] +  substitution
   else:
     new_digit_a = digit_a[:location_1] + substitution + digit_a[location_1+1:]
-  if numpy.random.uniform(0,1) < 0.5:
+  if numpy.random.uniform(0,1) < 0.2:
     new_a = float(new_digit_a)
   else:
     new_a = -float(new_digit_a)
-  if new_a > 1000:
-    print(new_a)
-    quit()
-    new_a = numpy.random.uniform(low = -1, high = 1)
   return new_a
 
 
@@ -109,9 +92,6 @@ def next_generation( matrix, good_index, crossover_rate, mutation_rate):
         combined_matrix[mutation_i][mutation_j] = Mutation_fun(combined_matrix[mutation_i][mutation_j])  
   combined_matrix = numpy.vstack((elite,combined_matrix))
   new_matrix = {}
-  
-  if combined_matrix.shape[0] != _NUM_POPULATION_SIZE:
-    quit()
 
   for lines in range(combined_matrix.shape[0]):
     new_matrix[lines] = combined_matrix[lines].reshape(size_0,size_1)
