@@ -30,33 +30,20 @@ def num_normalize(num,f_length,r_length):
     return new_num
 
 def Cross_over_fun(num_a,num_b):
-  front_length = 3
+  front_length = 1
   rear_length = 4
-  if num_a > 1000 or num_b > 1000:
-    print(num_a)
-    print(num_b)
-    quit()
   digit_a = num_normalize(num_a,front_length,rear_length)
   digit_b = num_normalize(num_b,front_length,rear_length)
-  location_1 = int(numpy.random.randint(0,len(digit_a),size=1))
+  location_1 = int(numpy.random.choice(front_length + rear_length,1) + 1)
   new_digit_a = digit_a[:location_1] + digit_b[location_1:]
   new_digit_b = digit_b[:location_1] + digit_a[location_1:]
   new_a = float(new_digit_a)
   new_b = float(new_digit_b)
-  if new_a > 1000 or new_b > 1000:
-    print(new_a)
-    print(new_b)
-    quit()
-    new_a = numpy.random.uniform(low = -1, high = 1)
-    new_b = numpy.random.uniform(low = -1, high = 1)
   return (new_a,new_b)
 
 def Mutation_fun(num_a):
-  front_length = 3
+  front_length = 1
   rear_length = 4
-  if num_a > 1000:
-    print(num_a)
-    quit()
   digit_a = num_normalize(num_a,front_length,rear_length)
   index_a = list(range(len(digit_a)))
   index_a.pop(0)
@@ -71,10 +58,6 @@ def Mutation_fun(num_a):
     new_a = float(new_digit_a)
   else:
     new_a = -float(new_digit_a)
-  if new_a > 1000:
-    print(new_a)
-    quit()
-    new_a = numpy.random.uniform(low = -1, high = 1)
   return new_a
 
 
@@ -109,9 +92,6 @@ def next_generation( matrix, good_index, crossover_rate, mutation_rate):
         combined_matrix[mutation_i][mutation_j] = Mutation_fun(combined_matrix[mutation_i][mutation_j])  
   combined_matrix = numpy.vstack((elite,combined_matrix))
   new_matrix = {}
-  
-  if combined_matrix.shape[0] != _NUM_POPULATION_SIZE:
-    quit()
 
   for lines in range(combined_matrix.shape[0]):
     new_matrix[lines] = combined_matrix[lines].reshape(size_0,size_1)
@@ -157,14 +137,16 @@ for trials in range(_NUM_MAX_GENERATION):
       Thres_vector [item] = numpy.random.uniform(low = -1, high = 1,size = (1,4))
       matrix_a_0 [item] = numpy.random.uniform(low = -1, high = 1,size = (5,4))
       matrix_a_1 [item] = numpy.random.uniform(low = -1, high = 1,size = (1,4))
-    Score = numpy.zeros((_NUM_POPULATION_SIZE,3))
+    Score = numpy.zeros((_NUM_POPULATION_SIZE,2))
     
   numpy.save('Thres_vector',Thres_vector)
   numpy.save('Matrix_a_0',matrix_a_0)
   numpy.save('Matrix_a_1',matrix_a_1)
   numpy.save('score',Score)
 
-  os.system("python -m pysc2.bin.agent --map BuildMarines --agent pysc2.agents.Build_barracks_and_marines_NN_model.my_agent.Build_Marine")
+  os.system("python -m pysc2.bin.agent \
+	--map BuildMarines \
+	--agent pysc2.agents.Build_barracks_and_marines_NN_model.my_agent.Build_Marine")
 
   #get score for each candidate
   score = numpy.load('score.npy')
