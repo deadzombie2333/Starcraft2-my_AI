@@ -93,7 +93,6 @@ class Build_Marine(base_agent.BaseAgent):
   COUNTER1 = _NUM_POPULATION_SIZE - 1
   Simu_init = False
   Simu_record = False
-  pre_structure = 0
   
   def step(self, obs):
     super(Build_Marine, self).step(obs)
@@ -103,12 +102,9 @@ class Build_Marine(base_agent.BaseAgent):
     unit_type = obs.observation["screen"][_UNIT_TYPE]
     
     max_y, max_x = unit_type.shape
-    distinct_unit = numpy.unique(unit_type)
-    distinct_unit = numpy.delete(distinct_unit,[0])
     army_supply = obs.observation["player"][_ARMY_SUPPLY]
     worker_supply = obs.observation["player"][_WORKER_SUPPLY]
     collected_mineral = obs.observation["score_cumulative"][[7]]
-    structure_value = obs.observation["score_cumulative"][[4]]
     
     if self.Score == 0 and not self.Simu_init:
       self.Simu_init = True
@@ -118,11 +114,9 @@ class Build_Marine(base_agent.BaseAgent):
       self.Simu_record = True
       
     if self.Simu_init and self.Simu_record and collected_mineral == 0:
-      structure_value = obs.observation["score_cumulative"][[4]] - 400
       #record to file
       score_combined = numpy.load('score.npy')
-      score_combined[self.COUNTER1,:] = numpy.hstack(([self.Score,structure_value - self.pre_structure]))
-      self.pre_structure = structure_value
+      score_combined[self.COUNTER1,:] = self.Score
       numpy.save('score',score_combined)
       print("simulation {} score {}".format(self.COUNTER1,score_combined[self.COUNTER1,:]))
       self.COUNTER1 += -1
@@ -143,6 +137,7 @@ class Build_Marine(base_agent.BaseAgent):
       self.barrack_x = 47
       self.barrack_y = 47
       self.barrack_num = 0
+      return actions.FunctionCall(_NO_OP, [])
       if self.COUNTER1 < 0:
         quit()
 
@@ -161,8 +156,8 @@ class Build_Marine(base_agent.BaseAgent):
         _vector_a_0 = _THRES_VECTOR[self.COUNTER1]
         _matrix_a_0 = _MATRIX_A_0[self.COUNTER1]
         _matrix_a_1 = _MATRIX_A_1[self.COUNTER1]
-        #determine what to build (army_supply, worker_supply, mineral_mines, minerals, max_supply, barrack_number)
-        info_vector = numpy.array([worker_supply/8, supply_obs/Supply_used, self.barrack_num/worker_supply, 50/minerals])
+        #determine what to build (army_supply, worker_supply, minerals, max_supply, barrack_number)
+        info_vector = numpy.array([worker_supply/8, supply_obs*(Supply_max/Supply_used-1), self.barrack_num/worker_supply, 1/minerals])
         Thres_vector = numpy.append(_vector_a_0,worker_supply)     # _vector_a_0 1*4
         NN_level_1 = numpy.dot(Thres_vector,_matrix_a_0) + _matrix_a_1 # _matrix_a_0 5*4 _matrix_a_1 1*4
         NN_level_active_1 = NN_level_1 * (NN_level_1 > 0) + 0.01
@@ -314,7 +309,6 @@ class Build_Marine(base_agent.BaseAgent):
         if chance == 0:
           distance += 1
           chance = 10
-      print("build supply depot at {}".format(s_target))
       return actions.FunctionCall(_BUILD_SUPPLYDEPOT, [_SCREEN, s_target])
         
     if self.build_barrack:
@@ -338,6 +332,5 @@ class Build_Marine(base_agent.BaseAgent):
         if chance == 0:
           distance += 1
           chance = 10
-      print("build barrack at {}".format(b_target))
       return actions.FunctionCall(_BUILD_BARRACKS, [_SCREEN, b_target])
 
