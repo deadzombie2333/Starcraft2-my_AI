@@ -17,7 +17,7 @@ When moving, NN is used to calculate the location or direction to move. There ar
 
 Based on the current NN structure, only some observation result is available. I will include some result as the project proceed.
 
-First of all, the agent can run successfully on my PC. Early generation have pretty lower score as expected. After several generations, highest score of current generation increases. Randomness in hostile unit location will influence the outcome of NN as well as the line-up of lings (banelings at front or back). Recorded score generally lower than score displayed (individual episode score intended). Highest recorded score for single episode is around 200 which is still lower than the NN proposed in original publication. 
+First of all, the agent can run successfully on my PC. Early generation have pretty lower score as expected. After several generations, highest score of current generation increases. Randomness in hostile unit location will influence the outcome of NN as well as the line-up of lings (banelings at front or back). Highest recorded score for single episode is around 100 which is still lower than the NN proposed in original publication. Mean recorded score for single eqisode is around 50. Further NN training is required.
 
 # Current Issue:
 
