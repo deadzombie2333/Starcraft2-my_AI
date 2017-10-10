@@ -28,7 +28,7 @@ _THREAT_MATRIX_A_0 = numpy.load('threat_a_0.npy').item()
 _THREAT_MATRIX_A_1 = numpy.load('threat_a_1.npy').item()
 _MOVE_MATRIX_A_0 = numpy.load('move_a_0.npy').item()
 _MOVE_MATRIX_A_1 = numpy.load('move_a_1.npy').item()
-_NUM_POPULATION_SIZE = 20
+_NUM_POPULATION_SIZE = 40
 
 def sigmoid(x):
   """x is a vector input"""
@@ -56,7 +56,6 @@ class Attack_Zerg(base_agent.BaseAgent):
   Record = False
   Hostile_HP = 0
   Friendly_HP = 0
-  Score = 0
 
   def step(self, obs):
     super(Attack_Zerg, self).step(obs)
@@ -123,6 +122,10 @@ class Attack_Zerg(base_agent.BaseAgent):
         distinct_unit = numpy.delete(distinct_unit,[0])
         for unit in distinct_unit:
           unit_y, unit_x = (player_type == unit).nonzero()
+          if len(unit_y) > 10:
+            select_index = random.sample(range(1,len(unit_y)),10)
+            unit_y = unit_y [select_index]
+            unit_x = unit_x [select_index]
           unit_vector = unit*numpy.ones(len(unit_y))
           unit_relation = player_relative[unit_y,unit_x]
           unit_HP = player_HP[unit_y,unit_x]
@@ -195,14 +198,10 @@ class Attack_Zerg(base_agent.BaseAgent):
       self.Stage_3 = False
       self.Stage_4 = True
       if friendly_num < hostile_num:
-        self.Score = self.Score + 5*(10 - hostile_num) - (9 - friendly_num)
         score_combined = numpy.load('score.npy')
-        score_combined[self.counter1] = self.Score
+        score_combined[self.counter1] = obs.observation["score_cumulative"][[0]]
         numpy.save('score',score_combined)
-        print("simulation {} score {}".format(self.counter1,self.Score))
+        print("simulation {} score {}".format(self.counter1,score_combined[self.counter1]))
         self.counter1 = self.counter1 - 1
-        self.Score = 0
         self.Hostile_HP = 0
-      else:
-        self.Score = self.Score + 5*(10 - hostile_num) - (9 - friendly_num)
       return actions.FunctionCall(_NO_OP, [])
