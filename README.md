@@ -9,7 +9,7 @@ In my project, I attempt to design a neural network based agent for both minigam
 
 This project is built on python 3.6.1 and numpy. During my coding, I referred to the project by https://github.com/chris-chris/pysc2-examples and https://github.com/skjb/pysc2-tutorial. 
 
-Training of NN:
+# Training of NN:
 
 NN in this project is trained use Evolution Algorithm (EA). The basic idea of EA come from evolution of natural species where the strongest one have higher opportunity to reproduce. 
 
