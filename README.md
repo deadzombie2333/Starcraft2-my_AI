@@ -20,3 +20,11 @@ Before the next generation (generation 1) started, EA first read all scores from
 In order to demonstrate the cross-over and mutation of parent candidate (candidate from generation 0) to generate children candidate (candidate to be, in generation 1), I will use two arbitrary candidates as example. Let the parent candidate be: “1.097” and “0.472”. Two candidates first transferred into a normalized form: “001.0970” and “000.4720”. Over some cross-over rate, some section of parent candidate will switch to generate two children candidates, such as: “001.0420” and “000.4970”. Over some mutation rate, some number of single parent will also mutate to generate one child candidate, such as: “001.3970”. Cross-over and mutation are major searching method of EA algorithm.
 
 After cross-over and mutation, next generation (generation 1) can be generated use previous generation (generation 0) based on the score. After this, next generation will be imported into the agent to generate its score.
+
+# Current Issue:
+
+Currently, there are still many issues with the code. First of all, is the consistency of NN found. For any identified NN, its score variation is still inconsistence with large variation. It is understandable for attack zerglings and banelings since the game is very active. But this is unnatural for build marines since the game is inactive. There might be some bugs involved. 
+
+Game speed is still way too fast for attack zerglings and baneling. 
+
+After the above tow issue resolved, further attempt in adjusting in NN structure is possible.
