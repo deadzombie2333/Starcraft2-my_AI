@@ -3,7 +3,7 @@ import os
 import re
 import struct
 
-_NUM_POPULATION_SIZE = 20
+_NUM_POPULATION_SIZE = 40
 #generate a for loop for multiple generation of genetic algorithm
 
 Threat_matrix_a_0 = numpy.load('threat_a_0.npy').item()
@@ -31,9 +31,7 @@ numpy.save('best_threat_a_1',Best_Threat_matrix_a_1)
 numpy.save('best_move_a_0',Best_Move_matrix_a_0)
 numpy.save('best_move_a_1',Best_Move_matrix_a_1)
 
-os.system("python -m pysc2.bin.agent \
-  --map DefeatZerglingsAndBanelings \
-  --agent pysc2.agents.Defeat_zergling_and_banlings_NN_model.my_agent.Attack_Zerg")
+os.system("python -m pysc2.bin.agent --map DefeatZerglingsAndBanelings --agent pysc2.agents.Defeat_zergling_and_banlings_NN_model.my_agent.Attack_Zerg")
 
 #get score for each candidate
 score = numpy.load('score.npy')
