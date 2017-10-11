@@ -18,11 +18,3 @@ When moving, NN is used to calculate the location or direction to move. There ar
 Based on the current NN structure, only some observation result is available. I will include some result as the project proceed.
 
 First of all, the agent can run successfully on my PC. Early generation have pretty lower score as expected. After several generations, highest score of current generation increases. Randomness in hostile unit location will influence the outcome of NN as well as the line-up of lings (banelings at front or back). Highest recorded score for single episode is around 100 which is still lower than the NN proposed in original publication. Mean recorded score for single episode is around 50. Further NN training is required.
-
-# Current Issue:
-
-Game speed is still too fast for current NN training. I attempted to change the game speed of mini game but not working very well. During combating, CPU is at full capacity which influence the agent control. Currently, the agent works better with smaller amount of marine since it requires lower computation. I’ll attempt to modify my code for an efficient computation.
-
-Score recorded is still inaccurate. Because, in some situation, map reset will automatically activate as soon as the last marine or zergling dies. Therefore, calculating based on current observed friendly and hostile unit is wrong (most of the time lower than paper proposed score). I’ll attempt to use the accumulative score property later to see if this improves.
-
-Currently, the model is still under-trained. For same candidate, its episode score variation is still too high. I believe this should be resolve after the fix of game speed and score recording. 
