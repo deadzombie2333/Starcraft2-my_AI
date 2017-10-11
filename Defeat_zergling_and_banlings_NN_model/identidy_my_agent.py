@@ -3,10 +3,11 @@ import os
 import re
 import struct
 
-_NUM_POPULATION_SIZE = 40
+_NUM_POPULATION_SIZE = 10
 _NUM_CROSSOVER_RATE = 0.2
 _NUM_MUTATION_RATE = 0.05
-_NUM_MAX_GENERATION = 1
+_NUM_TESTS = 10
+trials = 0
 #generate a for loop for multiple generation of genetic algorithm
 
 def num_normalize(num,f_length,r_length):
@@ -97,7 +98,7 @@ def next_generation( matrix, good_index, crossover_rate, mutation_rate):
     new_matrix[lines] = combined_matrix[lines].reshape(size_0,size_1)
   return new_matrix
 
-for trials in range(_NUM_MAX_GENERATION):
+while True:
   try: 
     Threat_matrix_a_0 = numpy.load('threat_a_0.npy').item()
     Threat_matrix_a_1 = numpy.load('threat_a_1.npy').item()
@@ -105,10 +106,14 @@ for trials in range(_NUM_MAX_GENERATION):
     Move_matrix_a_1 = numpy.load('move_a_1.npy').item()
     
     Score = numpy.load('score.npy')
-    
-    random_location = numpy.random.uniform(0,1,1) * sum(Score)
-    for j in range(Score.shape[0]):
-      if sum(Score[:j+1]) > random_location:
+    score = numpy.mean(Score,axis=1)
+    score_mean = numpy.mean(score)
+    score_std = numpy.std(score)
+    if score_mean > 150 and score_std < 20:
+      break
+    random_location = numpy.random.uniform(0,1,1) * sum(score)
+    for j in range(score.shape[0]):
+      if sum(score[:j+1]) > random_location:
         good_index = j
         break
     
@@ -122,23 +127,31 @@ for trials in range(_NUM_MAX_GENERATION):
     Threat_matrix_a_1 = {}
     Move_matrix_a_0 = {}
     Move_matrix_a_1 = {}
+    overall_score = numpy.zeros((1,_NUM_POPULATION_SIZE))
     for item in range(_NUM_POPULATION_SIZE):
       Threat_matrix_a_0 [item] = numpy.random.uniform(low = -1, high = 1,size = (4,4))
       Threat_matrix_a_1 [item] = numpy.random.uniform(low = -1, high = 1,size = (1,4))
-      Move_matrix_a_0 [item] = numpy.random.uniform(low = -1, high = 1,size = (6,2))
+      Move_matrix_a_0 [item] = numpy.random.uniform(low = -1, high = 1,size = (4,2))
       Move_matrix_a_1 [item] = numpy.random.uniform(low = -1, high = 1,size = (1,2))
-    Score = numpy.zeros((_NUM_POPULATION_SIZE,1))
+    Score = numpy.zeros((_NUM_POPULATION_SIZE,_NUM_TESTS))
+    numpy.save('score',Score)
+    numpy.save('score_summation',overall_score)
 
   numpy.save('threat_a_0',Threat_matrix_a_0)
   numpy.save('threat_a_1',Threat_matrix_a_1)
   numpy.save('move_a_0',Move_matrix_a_0)
   numpy.save('move_a_1',Move_matrix_a_1)
-  numpy.save('score',Score)
   
-  os.system("python -m pysc2.bin.agent --map DefeatZerglingsAndBanelings --agent pysc2.agents.Defeat_zergling_and_banlings_NN_model.my_agent.Attack_Zerg")
+  os.system("python -m pysc2.bin.agent \
+    --map DefeatZerglingsAndBanelings \
+    --agent pysc2.agents.Defeat_zergling_and_banlings_NN_model.my_agent.Attack_Zerg")
 
   #get score for each candidate
-  score = numpy.load('score.npy')
-  index = numpy.argmax(score)
-  print(trials+1)
-  print(score[index])
+  Score = numpy.load('score.npy')
+  score = numpy.mean(Score,axis=1)
+  overall_score = numpy.load('score_summation.npy')
+  overall_score = numpy.append(overall_score,[numpy.transpose(score)],axis = 0)
+  print("average score {}".format(score))
+  trials += 1
+  numpy.save('score_summation',overall_score)
+  print("trials {}, highest score {}".format(trials,numpy.amax(score)))
