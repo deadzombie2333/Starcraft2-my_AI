@@ -55,6 +55,7 @@ class Attack_Zerg(base_agent.BaseAgent):
   Attack = False
   Move = False
   Record = False
+  score = 0
   Hostile_HP = 0
   Friendly_HP = 0
   tests = _NUM_TESTS - 1
@@ -210,14 +211,14 @@ class Attack_Zerg(base_agent.BaseAgent):
         friendly_x_mean = numpy.mean(friendly_info[1])
         target_x = friendly_x_mean + numpy.sign(friendly_x_mean-hostile_x_mean) * 10 * move_rate
         target_y = friendly_y_mean + numpy.sign(friendly_y_mean-hostile_y_mean) * 10 * move_rate
-        if target_x < 0:
-          target_x = 0
-        if target_x > 84:
-          target_x = 84
-        if target_y < 0:
-          target_y = 0
-        if target_y > 84:
-          target_y = 84
+        if target_x < 1:
+          target_x = 1
+        if target_x > 83:
+          target_x = 83
+        if target_y < 1:
+          target_y = 1
+        if target_y > 83:
+          target_y = 83
         target = numpy.around([target_x,target_y])
         return actions.FunctionCall(_MOVE_SCREEN, [_NOT_QUEUED, target])
       elif _SELECT_ARMY in obs.observation["available_actions"]:
@@ -239,4 +240,21 @@ class Attack_Zerg(base_agent.BaseAgent):
         self.Hostile_HP = 0
         if self.counter1 < 0:
           quit()
+      else:
+        current_score = obs.observation["score_cumulative"][[0]]
+        if self.score > current_score:
+          score_combined = numpy.load('score.npy')
+          score_combined[self.counter1][self.tests] = obs.observation["score_cumulative"][[0]]
+          numpy.save('score',score_combined)
+          #print("simulation {} score {}".format(self.counter1,score_combined[self.counter1]))
+          if self.tests == 0:
+            self.counter1 = self.counter1 - 1
+            self.tests = _NUM_TESTS - 1
+          else:
+            self.tests += -1
+          self.Hostile_HP = 0
+          if self.counter1 < 0:
+            quit()
+        else:
+          self.score = current_score
       return actions.FunctionCall(_NO_OP, [])
