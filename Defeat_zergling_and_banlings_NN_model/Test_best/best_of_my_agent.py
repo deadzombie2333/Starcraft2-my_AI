@@ -28,7 +28,7 @@ _THREAT_MATRIX_A_0 = numpy.load('best_threat_a_0.npy').item()
 _THREAT_MATRIX_A_1 = numpy.load('best_threat_a_1.npy').item()
 _MOVE_MATRIX_A_0 = numpy.load('best_move_a_0.npy').item()
 _MOVE_MATRIX_A_1 = numpy.load('best_move_a_1.npy').item()
-_NUM_POPULATION_SIZE = 20
+_NUM_POPULATION_SIZE = 10
 
 def sigmoid(x):
   """x is a vector input"""
@@ -54,9 +54,9 @@ class Attack_Zerg(base_agent.BaseAgent):
   Attack = False
   Move = False
   Record = False
+  score = 0
   Hostile_HP = 0
   Friendly_HP = 0
-  Score = 0
 
   def step(self, obs):
     super(Attack_Zerg, self).step(obs)
@@ -123,6 +123,10 @@ class Attack_Zerg(base_agent.BaseAgent):
         distinct_unit = numpy.delete(distinct_unit,[0])
         for unit in distinct_unit:
           unit_y, unit_x = (player_type == unit).nonzero()
+          if len(unit_y) > 10:
+            select_index = random.sample(range(1,len(unit_y)),10)
+            unit_y = unit_y [select_index]
+            unit_x = unit_x [select_index]
           unit_vector = unit*numpy.ones(len(unit_y))
           unit_relation = player_relative[unit_y,unit_x]
           unit_HP = player_HP[unit_y,unit_x]
@@ -180,17 +184,40 @@ class Attack_Zerg(base_agent.BaseAgent):
             hostile_info = numpy.hstack((hostile_info,unit_matrix))
           else:
             friendly_info = numpy.hstack((friendly_info,unit_matrix))
+        
         friendly_health = numpy.mean(friendly_info[3] + friendly_info[4])
         hostile_health = numpy.mean(hostile_info[3] + hostile_info[4])
+        friendly_dps = (6-0)/0.61
+        hostile_dps = 0
+        for i in range(hostile_info.shape[1]):
+          if hostile_info[2][i] == 9:
+            hostile_dps += (35-0)
+          else:
+            hostile_dps += (10-0)/0.497
+        hostile_dps = hostile_dps/hostile_info.shape[1]
+        move_vector = numpy.array([hostile_health,friendly_health,hostile_dps,friendly_dps])
+        NN_level_1 = numpy.dot(move_vector, temp_move_matrix_a_0) + temp_move_matrix_a_1 #a_0 4*2, a_1 1*2
+        NN_decision = numpy.argmax(NN_level_1)
+        
+        if NN_decision == 0: 
+          move_rate = 1 # retreat
+        else:
+          move_rate = -1 #davance
         hostile_y_mean = numpy.mean(hostile_info[0])
         hostile_x_mean = numpy.mean(hostile_info[1])
         friendly_y_mean = numpy.mean(friendly_info[0])
         friendly_x_mean = numpy.mean(friendly_info[1])
-        move_vector = numpy.array([hostile_y_mean,hostile_x_mean,friendly_y_mean,friendly_x_mean,friendly_health,hostile_health])
-        NN_level_1 = numpy.dot(move_vector, temp_move_matrix_a_0) + temp_move_matrix_a_1 #a_0 6*2, a_1 1*2
-        NN_level_2 = sigmoid(NN_level_1)
-        target = numpy.around(numpy.multiply(NN_level_2,numpy.array([max_x-2,max_y-2]))+numpy.array([1,1])).ravel()
-        self.Hostile_HP = hostile_health
+        target_x = friendly_x_mean + numpy.sign(friendly_x_mean-hostile_x_mean) * 10 * move_rate
+        target_y = friendly_y_mean + numpy.sign(friendly_y_mean-hostile_y_mean) * 10 * move_rate
+        if target_x < 1:
+          target_x = 1
+        if target_x > 83:
+          target_x = 83
+        if target_y < 1:
+          target_y = 1
+        if target_y > 83:
+          target_y = 83
+        target = numpy.around([target_x,target_y])
         return actions.FunctionCall(_MOVE_SCREEN, [_NOT_QUEUED, target])
       elif _SELECT_ARMY in obs.observation["available_actions"]:
         return actions.FunctionCall(_SELECT_ARMY, [_SELECT_ALL])
@@ -199,14 +226,26 @@ class Attack_Zerg(base_agent.BaseAgent):
       self.Stage_3 = False
       self.Stage_4 = True
       if friendly_num < hostile_num:
-        self.Score = self.Score + 5*(10 - hostile_num) - (9 - friendly_num)
-        score_combined = numpy.load('score.npy')
-        score_combined[self.counter1] = self.Score
-        numpy.save('score',score_combined)
-        print("simulation {} score {}".format(self.counter1,self.Score))
+        score_combined = numpy.load('best_NN_score.npy')
+        score_combined[self.counter1] = obs.observation["score_cumulative"][[0]]
+        numpy.save('best_NN_score',score_combined)
+        print(obs.observation["score_cumulative"][[0]])
         self.counter1 = self.counter1 - 1
-        self.Score = 0
         self.Hostile_HP = 0
+        if self.counter1 < 0:
+          quit()
       else:
-        self.Score = self.Score + 5*(10 - hostile_num) - (9 - friendly_num)
+        current_score = obs.observation["score_cumulative"][[0]]
+        if self.score > current_score:
+          score_combined = numpy.load('best_NN_score.npy')
+          score_combined[self.counter1] = self.score
+          numpy.save('best_NN_score',score_combined)
+          print(self.score)
+          self.score = 0
+          self.counter1 = self.counter1 - 1
+          self.Hostile_HP = 0
+          if self.counter1 < 0:
+            quit()
+        else:
+          self.score = current_score
       return actions.FunctionCall(_NO_OP, [])
