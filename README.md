@@ -25,6 +25,4 @@ After cross-over and mutation, next generation (generation 1) can be generated u
 
 Currently, there are still many issues with the code. First of all, is the consistency of NN found. For any identified NN, its score variation is still inconsistence with large variation. It is understandable for attack zerglings and banelings since the game is very active. But this is unnatural for build marines since the game is inactive. There might be some bugs involved. 
 
-Game speed is still way too fast for attack zerglings and baneling. 
-
 After the above tow issue resolved, further attempt in adjusting in NN structure is possible.
