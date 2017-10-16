@@ -7,7 +7,6 @@ _NUM_POPULATION_SIZE = 10
 _NUM_CROSSOVER_RATE = 0.2
 _NUM_MUTATION_RATE = 0.05
 _NUM_TESTS = 10
-trials = 0
 #generate a for loop for multiple generation of genetic algorithm
 
 def num_normalize(num,f_length,r_length):
@@ -74,13 +73,14 @@ def next_generation( matrix, good_index, crossover_rate, mutation_rate):
     if item == good_index:
       elite = combined_vector
     else:
-      non_elite = numpy.vstack((non_elite,combined_vector))
+      non_elite = numpy.append(non_elite,combined_vector,axis = 0)
   non_elite = non_elite[1:]
   combined_matrix = non_elite
   combined_index = numpy.arange(combined_matrix.shape[0])
   numpy.random.shuffle(combined_index)
-  combined_matrix = combined_matrix[combined_index]
-  
+  combined_index = combined_index[:-1]
+  combined_matrix = numpy.append(combined_matrix[combined_index],elite,axis = 0)
+
   for cross_over_i in range(combined_matrix.shape[0]-2):
     for cross_over_j in range(combined_matrix.shape[1]-1):
       if numpy.random.uniform(0,1) < crossover_rate:
@@ -91,14 +91,14 @@ def next_generation( matrix, good_index, crossover_rate, mutation_rate):
     for mutation_j in range(combined_matrix.shape[1]-1):
       if numpy.random.uniform(0,1) < mutation_rate:
         combined_matrix[mutation_i][mutation_j] = Mutation_fun(combined_matrix[mutation_i][mutation_j])  
-  combined_matrix = numpy.vstack((elite,combined_matrix))
+  combined_matrix = numpy.append(combined_matrix,elite,axis = 0)
   new_matrix = {}
 
   for lines in range(combined_matrix.shape[0]):
     new_matrix[lines] = combined_matrix[lines].reshape(size_0,size_1)
   return new_matrix
 
-while True:
+for i in range(2):
   try: 
     Threat_matrix_a_0 = numpy.load('threat_a_0.npy').item()
     Threat_matrix_a_1 = numpy.load('threat_a_1.npy').item()
@@ -107,10 +107,6 @@ while True:
     
     Score = numpy.load('score.npy')
     score = numpy.mean(Score,axis=1)
-    score_mean = numpy.mean(score)
-    score_std = numpy.std(score)
-    if score_mean > 150 and score_std < 20:
-      break
     random_location = numpy.random.uniform(0,1,1) * sum(score)
     for j in range(score.shape[0]):
       if sum(score[:j+1]) > random_location:
@@ -121,7 +117,7 @@ while True:
     Threat_matrix_a_1 = next_generation(Threat_matrix_a_1, good_index, _NUM_CROSSOVER_RATE, _NUM_MUTATION_RATE)
     Move_matrix_a_0 = next_generation(Move_matrix_a_0, good_index, _NUM_CROSSOVER_RATE, _NUM_MUTATION_RATE)
     Move_matrix_a_1 = next_generation(Move_matrix_a_1, good_index, _NUM_CROSSOVER_RATE, _NUM_MUTATION_RATE)
- 
+
   except FileNotFoundError:
     Threat_matrix_a_0 = {}
     Threat_matrix_a_1 = {}
@@ -134,14 +130,15 @@ while True:
       Move_matrix_a_0 [item] = numpy.random.uniform(low = -1, high = 1,size = (4,2))
       Move_matrix_a_1 [item] = numpy.random.uniform(low = -1, high = 1,size = (1,2))
     Score = numpy.zeros((_NUM_POPULATION_SIZE,_NUM_TESTS))
-    numpy.save('score',Score)
-    numpy.save('score_summation',overall_score)
+    Summed_Score = numpy.zeros((1,_NUM_POPULATION_SIZE))
+    numpy.save('summed_score',Summed_Score)
+    numpy.save('score',Score) #target mean 727, 729; Max 757, 848
 
   numpy.save('threat_a_0',Threat_matrix_a_0)
   numpy.save('threat_a_1',Threat_matrix_a_1)
   numpy.save('move_a_0',Move_matrix_a_0)
   numpy.save('move_a_1',Move_matrix_a_1)
-  
+
   os.system("python -m pysc2.bin.agent \
     --map DefeatZerglingsAndBanelings \
     --agent pysc2.agents.Defeat_zergling_and_banlings_NN_model.my_agent.Attack_Zerg")
@@ -149,9 +146,9 @@ while True:
   #get score for each candidate
   Score = numpy.load('score.npy')
   score = numpy.mean(Score,axis=1)
-  overall_score = numpy.load('score_summation.npy')
-  overall_score = numpy.append(overall_score,[numpy.transpose(score)],axis = 0)
+  Summed_Score = numpy.load('summed_score.npy')
+  Summed_Score = numpy.vstack((Summed_Score,score))
+  numpy.save('summed_score',Summed_Score)
+
   print("average score {}".format(score))
-  trials += 1
-  numpy.save('score_summation',overall_score)
-  print("trials {}, highest score {}".format(trials,numpy.amax(score)))
+  print("trials {}, highest score {}".format(Summed_Score.shape[0],numpy.amax(score)))
