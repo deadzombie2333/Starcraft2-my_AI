@@ -232,6 +232,7 @@ class Attack_Zerg(base_agent.BaseAgent):
         score_combined[self.counter1][self.tests] = obs.observation["score_cumulative"][[0]]
         numpy.save('score',score_combined)
         #print("simulation {} score {}".format(self.counter1,score_combined[self.counter1]))
+        print(obs.observation["score_cumulative"][[0]])
         if self.tests == 0:
           self.counter1 = self.counter1 - 1
           self.tests = _NUM_TESTS - 1
@@ -244,9 +245,11 @@ class Attack_Zerg(base_agent.BaseAgent):
         current_score = obs.observation["score_cumulative"][[0]]
         if self.score > current_score:
           score_combined = numpy.load('score.npy')
-          score_combined[self.counter1][self.tests] = obs.observation["score_cumulative"][[0]]
+          score_combined[self.counter1][self.tests] = self.score
           numpy.save('score',score_combined)
           #print("simulation {} score {}".format(self.counter1,score_combined[self.counter1]))
+          print(self.score)
+          self.score = 0
           if self.tests == 0:
             self.counter1 = self.counter1 - 1
             self.tests = _NUM_TESTS - 1
