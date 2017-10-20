@@ -17,6 +17,11 @@ Training of build marine is successful. Use the modified genetic algorithm, one 
 
 Performance of modified genetic algorithm and original genetic algorithm can be compare by using same initial candidate (use same random candidate as first generation).
 
+![ScreenShot](https://github.com/deadzombie2333/Starcraft2-my_AI/blob/master/Build_barracks_and_marines_NN_model/Figure_4.png)
+
 Above figure demonstrate the performance of original genetic algorithm in finding optimal threshold for each parameter. Many candidate generate use this algorithm remains zero after several generations while the highest score acquired is around 120.
+
+![ScreenShot](https://github.com/deadzombie2333/Starcraft2-my_AI/blob/master/Build_barracks_and_marines_NN_model/Figure_2.png)
+![ScreenShot](https://github.com/deadzombie2333/Starcraft2-my_AI/blob/master/Build_barracks_and_marines_NN_model/Figure_3.png)
 
 After some modification in zero candidate elimination and replacement, performance of genetic algorithm improved dramatically. Above two figures show the modified algorithm eliminate most of zero candidates and improved GA in a great margin.
