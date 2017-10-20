@@ -27,3 +27,5 @@ Above figure demonstrate the performance of original genetic algorithm in findin
 ![ScreenShot](https://github.com/deadzombie2333/Starcraft2-my_AI/blob/master/Build_barracks_and_marines_NN_model/Figure_3.png)
 
 After some modification in zero candidate elimination and replacement, performance of genetic algorithm improved dramatically. Above two figures show the modified algorithm eliminate most of zero candidates and improved GA in a great margin.
+
+FYI: I can only achieve 123 in many attempts. Seems like my AI can, at least, beat me in this game.
