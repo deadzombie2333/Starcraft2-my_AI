@@ -11,7 +11,7 @@ The agent is designed on three thresholds: 1, ratio between worker supply and nu
 The agent architecture is not only designed for the use of this mini game, it can have general application in full game AI design. For example, in different tactics, ratio can vary. For early rush tactic (higher early game army count), compare to normal tactic, ratio 1 should be lower to guaranteed more resources are focus on build more army. For greedy tactic (faster expand), ratio 3 should be lower to have more mineral to expand to other mine locations. Furthermore, similar threshold can be applied to vespene gas where ratio between factory, star port as well as tech lab and reactor over number of vespene gas can be considered further. 
 Meanwhile, this agent show some rigidness in its structure which may influence its performance in real game. Army only build after all thresholds are satisfied. In real game, it is possible that one start training army in completed barrack while some barrack is building. This issue can be resolved if one can rotating over several command instead of taking series of command. This idea is out of the scope of current project so I will attempt if time allowed.
 
-#Result and discussion:
+# Result and discussion:
 
 In this mini game training, we take 8 candidates in each generation while each candidate have 2 simulations and the score of this candidate is the average score over this two attempts. I slightly changed the genetic algorithm used to separate out candidate with zero score which have zero chance to be selected as elite. The cause of zero candidate is then analyzed and replaced by other random candidate with the exemption of this cause. Therefore, converge of genetic algorithm is enhanced in this training process.
 
