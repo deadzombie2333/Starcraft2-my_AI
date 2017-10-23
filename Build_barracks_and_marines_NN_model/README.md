@@ -1,3 +1,6 @@
+# Updates:
+10/23/2017. Decrease game speed will increase the average score of my agent. Just uploaded a video of this agent in normaly game speed with score of 138. https://youtu.be/XY0YOSn_xRk
+
 # Mini game, build marines:
 
 In mini game build marine, agent is attempt to build as many marine as possible with only 8 minefields and one command center. This simulate the “Macro” in Starcraft 2 where player have to balance between many factor such as timing of build supply depot, total worker built and number of barracks build. Based on my understanding, success of this mini game rely on certain factors: 1, build exact amount of worker such that mineral mining is maximized; 2, in exacting time, build supply depot such that there are enough supply to build marine; 3, build exact amount of barracks such that minerals harvested can support marine production with small amount of mineral reserve. In brief, is to design a build order based on current mineral and supply such that marine build is in high speed and continuous.
