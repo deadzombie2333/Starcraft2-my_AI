@@ -1,3 +1,7 @@
+# Updates:
+10/23/2017. Slower game speed will cause failure of identified model. The model does not have general validity. Attack part is fine since it can locate baneling first. I believe the problem is on Move part.
+
+
 # Mini game, defeat zerglings and banglings:
 
 In mini game Defeat zerglings and banelings, friendly units are terran marines while hostile unit are zerg zerglings and banelings. Based on knowledge, banelings are melee (short range) unit which have higher damage to group of light armor unit such as marines (one can also observe this by play this mini game for several rounds). Therefore, it is important to select the optimal attacking target of friendly unit and take advantage of attack range of marines. A full of AI architecture of this mini game tactic would be first acknowledge the advantage of attack range of friendly unit with disadvantage of attack damage (DPS). Then, based on this, a “hit and run” tactic is designed to limit hostile unit damage (only part of hostile unit can attack friendly unit at the same time). In my project, I bypassed the first decision part and went straight to marine “hit and run” micro. 
