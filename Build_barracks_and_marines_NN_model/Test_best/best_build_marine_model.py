@@ -13,7 +13,6 @@ score = numpy.mean(Score,axis=1)
 
 good_index = numpy.argmax(score)
 
-quit()
 Best_Thres_vector = {}
 
 for item in range(_NUM_POPULATION_SIZE):
