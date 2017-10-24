@@ -28,7 +28,8 @@ _THREAT_MATRIX_A_0 = numpy.load('best_threat_a_0.npy').item()
 _THREAT_MATRIX_A_1 = numpy.load('best_threat_a_1.npy').item()
 _MOVE_MATRIX_A_0 = numpy.load('best_move_a_0.npy').item()
 _MOVE_MATRIX_A_1 = numpy.load('best_move_a_1.npy').item()
-_NUM_POPULATION_SIZE = 10
+_NUM_POPULATION_SIZE = 1
+_NUM_TESTS = 5
 
 def sigmoid(x):
   """x is a vector input"""
@@ -57,6 +58,7 @@ class Attack_Zerg(base_agent.BaseAgent):
   score = 0
   Hostile_HP = 0
   Hostile_num = 0
+  tests = _NUM_TESTS - 1
 
   def step(self, obs):
     super(Attack_Zerg, self).step(obs)
@@ -227,26 +229,37 @@ class Attack_Zerg(base_agent.BaseAgent):
       self.Stage_3 = False
       self.Stage_4 = True
       if friendly_num < hostile_num:
-        score_combined = numpy.load('best_NN_score.npy')
-        score_combined[self.counter1] = obs.observation["score_cumulative"][[0]]
-        numpy.save('best_NN_score',score_combined)
+        score_combined = numpy.load('score.npy')
+        score_combined[self.counter1][self.tests] = obs.observation["score_cumulative"][[0]]
+        numpy.save('score',score_combined)
+        #print("simulation {} score {}".format(self.counter1,score_combined[self.counter1]))
         print(obs.observation["score_cumulative"][[0]])
-        self.counter1 = self.counter1 - 1
+        if self.tests == 0:
+          self.counter1 = self.counter1 - 1
+          self.tests = _NUM_TESTS - 1
+        else:
+          self.tests += -1
         self.Hostile_HP = 0
         if self.counter1 < 0:
           quit()
       else:
         current_score = obs.observation["score_cumulative"][[0]]
         if self.score > current_score:
-          score_combined = numpy.load('best_NN_score.npy')
-          score_combined[self.counter1] = self.score
-          numpy.save('best_NN_score',score_combined)
+          score_combined = numpy.load('score.npy')
+          score_combined[self.counter1][self.tests] = self.score
+          numpy.save('score',score_combined)
+          #print("simulation {} score {}".format(self.counter1,score_combined[self.counter1]))
           print(self.score)
           self.score = 0
-          self.counter1 = self.counter1 - 1
+          if self.tests == 0:
+            self.counter1 = self.counter1 - 1
+            self.tests = _NUM_TESTS - 1
+          else:
+            self.tests += -1
           self.Hostile_HP = 0
           if self.counter1 < 0:
             quit()
         else:
           self.score = current_score
-      return actions.FunctionCall(_NO_OP, [])
+      
+    return actions.FunctionCall(_NO_OP, [])
