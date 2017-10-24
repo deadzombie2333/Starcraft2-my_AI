@@ -56,7 +56,7 @@ class Attack_Zerg(base_agent.BaseAgent):
   Record = False
   score = 0
   Hostile_HP = 0
-  Friendly_HP = 0
+  Hostile_num = 0
 
   def step(self, obs):
     super(Attack_Zerg, self).step(obs)
@@ -76,6 +76,7 @@ class Attack_Zerg(base_agent.BaseAgent):
       self.Stage_3 = False
       self.Stage_4 = False
       if hostile_HP == self.Hostile_HP:
+        self.Hostile_num = hostile_num
         self.Stage_1 = True
         self.Stage_2 = False
       else:
@@ -94,7 +95,7 @@ class Attack_Zerg(base_agent.BaseAgent):
       self.Move = False
     
     if self.Stage_2:
-      if self.Attack:
+      if self.Attack and hostile_num < self.Hostile_num:
         self.Attack = False
         self.Move = True
       else:
