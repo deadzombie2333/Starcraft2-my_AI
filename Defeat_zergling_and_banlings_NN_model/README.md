@@ -1,6 +1,6 @@
 # Updates:
 10/23/2017. Slower game speed will cause failure of identified model. The model does not have general validity. Attack part is fine since it can locate baneling first. I believe the problem is on Move part.
-
+10/25/2017. The problem is identified. This is all about the step_mul in bin.agent. For exampel, if step_mul = 4 means there are four observations combined with one action. Assume 0.1 s for each observation, then action frequency is 0.4 s. if setp_mul = 1, action frequency is 0.1 s. This have small impact to slow pace mini game. But the impact to fast pace mini game is huge (0.4s hit and 0.4s run to 0.1s hit and 0.1s run are totally different thing, you can think of attack animation, for example). If the model is identified at step_mul = 4, either a condition is set to constrain the shift between hit and run or a mandatory no move or other move inbetween is necessary.
 
 # Mini game, defeat zerglings and banglings:
 
