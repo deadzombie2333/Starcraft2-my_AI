@@ -17,9 +17,7 @@ Best_Thres_vector = {}
 
 for item in range(_NUM_POPULATION_SIZE):
   Best_Thres_vector [item] = Thres_vector [good_index]
-
-Score = numpy.zeros((_NUM_POPULATION_SIZE,1))
-numpy.save('score',Score)# target: average: 133 138 Max: 133 142
+# target: average: 133 138 Max: 133 142
  
 numpy.save('best_Thres_vector',Best_Thres_vector)
 
