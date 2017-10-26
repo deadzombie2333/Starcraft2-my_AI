@@ -223,7 +223,7 @@ class Build_Marine(base_agent.BaseAgent):
         return actions.FunctionCall(_NO_OP, [])
     
     if self.current_command == 1: #build SCV
-      if Supply_used < Supply_max:
+      if Supply_used < Supply_max and _TERRAN_SCV not in obs.observation["build_queue"]:
         if _TRAIN_SCV in obs.observation['available_actions']:
           if minerals >= 50:
             self.command_hold = False
