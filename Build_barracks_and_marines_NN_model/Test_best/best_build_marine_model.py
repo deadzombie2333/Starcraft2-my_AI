@@ -21,9 +21,7 @@ for item in range(_NUM_POPULATION_SIZE):
  
 numpy.save('best_Thres_vector',Best_Thres_vector)
 
-os.system("python -m pysc2.bin.agent \
-	--map BuildMarines \
-	--agent pysc2.agents.Build_barracks_and_marines_NN_model.Test_best.best_of_my_agent.Build_Marine")
+os.system("python -m pysc2.bin.agent --map BuildMarines --agent pysc2.agents.Build_barracks_and_marines_NN_model.Test_best.best_of_my_agent.Build_Marine")
 
 #get score for each candidate
 score = numpy.load('score.npy')
